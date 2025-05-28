@@ -28,8 +28,8 @@
 
 <body>
   <div id="controls">
-    <label for="tipoObraSelect">Filtrar por tipo de obra:</label>
-    <select id="tipoObraSelect">
+    <label for="typeBuildSelect">Filtrar por tipo de obra:</label>
+    <select id="typeBuildSelect">
       <option value="">Todas</option>
     </select>
   </div>
@@ -52,7 +52,7 @@
         zoom: 13
       });
 
-      const tipoObraSelect = document.getElementById("tipoObraSelect");
+      const typeBuildSelect = document.getElementById("typeBuildSelect");
 
       const codedValues = [
         { name: "Educação", code: 1 },
@@ -71,10 +71,10 @@
         const option = document.createElement("option");
         option.value = code;
         option.textContent = name;
-        tipoObraSelect.appendChild(option);
+        typeBuildSelect.appendChild(option);
       });
 
-      const obrasLayer = new FeatureLayer({
+      const buildsLayer = new FeatureLayer({
         url: "https://gis.vitoria.es.gov.br/arcgis/rest/services/Edit/ObraPublicaStoryMaps/MapServer/0",
         outFields: ["*"],
         popupTemplate: {
@@ -89,12 +89,12 @@
         }
       });
 
-      tipoObraSelect.addEventListener("change", () => {
-        const selected = tipoObraSelect.value;
-        obrasLayer.definitionExpression = selected ? `tipo = ${selected}` : null;
+      typeBuildSelect.addEventListener("change", () => {
+        const selected = typeBuildSelect.value;
+        buildsLayer.definitionExpression = selected ? `tipo = ${selected}` : null;
       });
 
-      map.add(obrasLayer);
+      map.add(buildsLayer);
 
   </script>
 </body>
