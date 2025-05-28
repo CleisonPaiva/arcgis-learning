@@ -2,83 +2,101 @@
 <html>
   <head>
     <title>Simple Scene Map</title>
-<meta charset="UTF-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://js.arcgis.com/4.4/"></script>
     <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
   </head>
   <body>
     <h1 class="font-bold">Welcome to Simple Request Map</h1>
     <p>This is a Simple Request Map using ArcGIS.</p>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" id="satellite">Satellite Map</button>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" id="topomap">Topo Map</button>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" id="streetmap">Street Map</button>
-    <select id="listservices" class="bg-gray-200 border border-gray-300 text-gray-700 py-2 px-4 rounded">
+    <button
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      id="satellite"
+    >
+      Satellite Map
+    </button>
+    <button
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      id="topomap"
+    >
+      Topo Map
+    </button>
+    <button
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      id="streetmap"
+    >
+      Street Map
+    </button>
+    <select
+      id="listservices"
+      class="bg-gray-200 border border-gray-300 text-gray-700 py-2 px-4 rounded"
+    >
       <option value="">Select a service</option>
     </select>
     <div id="mapview" style="width: 500px; height: 400px">maps</div>
-    <script>
+    <script type="module">
+      import Map from "https://js.arcgis.com/4.29/@arcgis/core/Map.js";
+      import MapView from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js";
+      import SceneView from "https://js.arcgis.com/4.29/@arcgis/core/views/SceneView.js";
+      import Request from "https://js.arcgis.com/4.29/@arcgis/core/request.js";
+
       let topomap;
       let satellitemap;
       let streetmap;
       let sceneview;
 
-      require(["esri/Map", "esri/views/MapView", "esri/views/SceneView","esri/request"], 
-      function (Map, MapView, SceneView, Request) {
-
-         topomap = new Map({
-          basemap: "topo", // Basemap layer service
-        });
-
-        satellitemap = new Map({
-          basemap: "satellite", // Basemap layer service
-        });
-
-        streetmap = new Map({
-          basemap: "streets", // Basemap layer service
-        });
-
-        let viewoptions = {
-          container: "mapview",
-          map: satellitemap,
-          zoom: 3,
-          center: [-40.24623155592487, -20.214736979945044],
-          scale:10000,
-        }
-         sceneview = new SceneView(viewoptions);
-
-
-        // Example of a simple request
-        //const url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=false&f=json";
-        let url = "https://server.arcgisonline.com/arcgis/rest/?f=json";
-        let options = {responseType: "json"};
-        Request(url, options).then(function(response) {
-          let result = response.data;
-
-          let listservices=document.getElementById("listservices");
-
-          result.services.map(function (item, index) {
-            let option = document.createElement("option");
-            option.value = item.name;
-            option.text = item.name;
-            listservices.add(option);
-          });
-        });
-
-
+      topomap = new Map({
+        basemap: "topo", // Basemap layer service
       });
 
-      document.getElementById("satellite").addEventListener("click", function () {
-        sceneview.map = satellitemap;
+      satellitemap = new Map({
+        basemap: "satellite", // Basemap layer service
       });
+
+      streetmap = new Map({
+        basemap: "streets", // Basemap layer service
+      });
+
+      let viewoptions = {
+        container: "mapview",
+        map: satellitemap,
+        zoom: 3,
+        center: [-40.24623155592487, -20.214736979945044],
+        scale: 10000,
+      };
+      sceneview = new SceneView(viewoptions);
+
+      // Example of a simple request
+      //const url = "https://sampleserver6.arcgisonline.com/arcgis/rest/services/WorldTimeZones/MapServer/0/query?where=1%3D1&outFields=*&returnGeometry=false&f=json";
+      let url = "https://server.arcgisonline.com/arcgis/rest/?f=json";
+      let options = { responseType: "json" };
+      Request(url, options).then(function (response) {
+        let result = response.data;
+
+        let listservices = document.getElementById("listservices");
+
+        result.services.map(function (item, index) {
+          let option = document.createElement("option");
+          option.value = item.name;
+          option.text = item.name;
+          listservices.add(option);
+        });
+      });
+
+      document
+        .getElementById("satellite")
+        .addEventListener("click", function () {
+          sceneview.map = satellitemap;
+        });
       document.getElementById("topomap").addEventListener("click", function () {
         sceneview.map = topomap;
       });
-      document.getElementById("streetmap").addEventListener("click", function () {
-        sceneview.map = streetmap;
-      });
-
+      document
+        .getElementById("streetmap")
+        .addEventListener("click", function () {
+          sceneview.map = streetmap;
+        });
     </script>
   </body>
 </html>

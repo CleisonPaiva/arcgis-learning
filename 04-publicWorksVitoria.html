@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Mapa de Obras Públicas</title>
+  <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
+  <style>
+    html,
+    body,
+    #viewDiv {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+    }
+
+    #controls {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 99;
+      background: white;
+      padding: 10px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+    }
+  </style>
+</head>
+
+<body>
+  <div id="controls">
+    <label for="tipoObraSelect">Filtrar por tipo de obra:</label>
+    <select id="tipoObraSelect">
+      <option value="">Todas</option>
+    </select>
+  </div>
+  <div id="viewDiv"></div>
+
+  <script type="module">
+
+      import Map from "https://js.arcgis.com/4.29/@arcgis/core/Map.js";
+      import MapView from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js"; 
+      import FeatureLayer from "https://js.arcgis.com/4.29/@arcgis/core/layers/FeatureLayer.js";
+
+      const map = new Map({
+        basemap: "satellite"
+      });
+
+      const view = new MapView({
+        container: "viewDiv",
+        map: map,
+        center: [-40.3128, -20.3155], // Vitória, ES
+        zoom: 13
+      });
+
+      const tipoObraSelect = document.getElementById("tipoObraSelect");
+
+      const codedValues = [
+        { name: "Educação", code: 1 },
+        { name: "Saúde", code: 2 },
+        { name: "Drenagem", code: 3 },
+        { name: "Encostas", code: 4 },
+        { name: "Mobilidade", code: 5 },
+        { name: "Lazer", code: 6 },
+        { name: "Infraestrutura", code: 7 },
+        { name: "Assistência Social", code: 8 },
+        { name: "Habitação", code: 9 },
+        { name: "Escadarias", code: 10 }
+      ];
+
+      codedValues.forEach(({ code, name }) => {
+        const option = document.createElement("option");
+        option.value = code;
+        option.textContent = name;
+        tipoObraSelect.appendChild(option);
+      });
+
+      const obrasLayer = new FeatureLayer({
+        url: "https://gis.vitoria.es.gov.br/arcgis/rest/services/Edit/ObraPublicaStoryMaps/MapServer/0",
+        outFields: ["*"],
+        popupTemplate: {
+          title: "{nome}",
+          content: `
+            <strong>Início:</strong> {inicio}<br>
+            <strong>Previsão de entrega:</strong> {final}<br>
+            <strong>Contratada:</strong> {contratada}<br>
+            <strong>Percentual de andamento:</strong> {percentualAndamento}%<br>
+            <strong>Situação:</strong> {situacaoAtual}
+          `
+        }
+      });
+
+      tipoObraSelect.addEventListener("change", () => {
+        const selected = tipoObraSelect.value;
+        obrasLayer.definitionExpression = selected ? `tipo = ${selected}` : null;
+      });
+
+      map.add(obrasLayer);
+
+  </script>
+</body>
+
+</html>

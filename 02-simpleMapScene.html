@@ -2,60 +2,77 @@
 <html>
   <head>
     <title>Simple Scene Map</title>
-<meta charset="UTF-8" />
+    <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <script src="https://js.arcgis.com/4.4/"></script>
     <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
   </head>
   <body>
     <h1 class="font-bold">Welcome to Simple Scene Map</h1>
     <p>This is a Simple Scene Map using ArcGIS.</p>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" id="satellite">Satellite Map</button>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" id="topomap">Topo Map</button>
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded" id="streetmap">Street Map</button>
+    <button
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      id="satellite"
+    >
+      Satellite Map
+    </button>
+    <button
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      id="topomap"
+    >
+      Topo Map
+    </button>
+    <button
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      id="streetmap"
+    >
+      Street Map
+    </button>
     <div id="mapview" style="width: 500px; height: 400px">maps</div>
-    <script>
+    <script type="module">
+      import Map from "https://js.arcgis.com/4.29/@arcgis/core/Map.js";
+      import MapView from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js";
+      import SceneView from "https://js.arcgis.com/4.29/@arcgis/core/views/SceneView.js";
+
       let topomap;
       let satellitemap;
       let streetmap;
       let sceneview;
 
-      require(["esri/Map", "esri/views/MapView", "esri/views/SceneView"], 
-      function (Map, MapView, SceneView) {
-
-         topomap = new Map({
-          basemap: "topo", // Basemap layer service
-        });
-
-        satellitemap = new Map({
-          basemap: "satellite", // Basemap layer service
-        });
-
-        streetmap = new Map({
-          basemap: "streets", // Basemap layer service
-        });
-
-        let viewoptions = {
-          container: "mapview",
-          map: satellitemap,
-          zoom: 3,
-          center: [-40.24623155592487, -20.214736979945044],
-          scale:10000,
-        }
-         sceneview = new SceneView(viewoptions);
+      topomap = new Map({
+        basemap: "topo", // Basemap layer service
       });
 
-      document.getElementById("satellite").addEventListener("click", function () {
-        sceneview.map = satellitemap;
+      satellitemap = new Map({
+        basemap: "satellite", // Basemap layer service
       });
+
+      streetmap = new Map({
+        basemap: "streets", // Basemap layer service
+      });
+
+      let viewoptions = {
+        container: "mapview",
+        map: satellitemap,
+        zoom: 3,
+        center: [-40.24623155592487, -20.214736979945044],
+        scale: 10000,
+      };
+      sceneview = new SceneView(viewoptions);
+
+      document
+        .getElementById("satellite")
+        .addEventListener("click", function () {
+          sceneview.map = satellitemap;
+        });
       document.getElementById("topomap").addEventListener("click", function () {
         sceneview.map = topomap;
       });
-      document.getElementById("streetmap").addEventListener("click", function () {
-        sceneview.map = streetmap;
-      });
-
+      document
+        .getElementById("streetmap")
+        .addEventListener("click", function () {
+          sceneview.map = streetmap;
+        });
     </script>
   </body>
 </html>

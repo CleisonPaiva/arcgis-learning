@@ -2,8 +2,6 @@
 <html>
   <head>
     <title>Simple Map</title>
-
-    <script src="https://js.arcgis.com/4.4/"></script>
     <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
   </head>
   <body>
@@ -11,19 +9,20 @@
     <p>This is a Simple Map using ArcGIS.</p>
 
     <div id="mapview" style="width: 500px; height: 400px">maps</div>
-    <script>
-      //let map, mapview;
-      require(["esri/Map", "esri/views/MapView"], function (Map, MapView) {
-        let map = new Map({
-          basemap: "topo", // Basemap layer service
-        });
+    <script type="module">
+      import Map from "https://js.arcgis.com/4.29/@arcgis/core/Map.js";
+      import MapView from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js";
 
-        let mapview = new MapView({
-          container: "mapview",
-          map: map,
-          zoom: 10,
-          center: [-40.24623155592487, -20.214736979945044],
-        });
+      //let map, mapview;
+      const map = new Map({
+        basemap: "topo", // Basemap layer service
+      });
+
+      const mapview = new MapView({
+        container: "mapview",
+        map: map,
+        zoom: 10,
+        center: [-40.24623155592487, -20.214736979945044],
       });
     </script>
   </body>
