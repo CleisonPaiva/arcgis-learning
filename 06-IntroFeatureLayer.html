@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>Traffic Accidents in Great Britain web application</title>
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+    </style>
+    <link rel="stylesheet" href="https://js.arcgis.com/4.30/esri/themes/light/main.css">
+    <script src="https://js.arcgis.com/4.30/"></script>
+
+    <script>
+      require(["esri/config", "esri/views/MapView", "esri/WebMap"], (esriConfig, MapView, WebMap) => {
+        esriConfig.apiKey = "AAPTxy8BH1VEsoebNVZXo8HurMrIUxu4Ip2HSeoi2rKHLyOAdY3ja5z63C-Dw1Dx2-MBdu1BHSJghGdj7MepUlsgu8Na2IlvzGkQuh5qEmbRQDGtDabEo1a-fCzyXwse7A7bLO_HOE7PhXVT5SXBqfkqK1Yr6KSqDmyyOrcoD_Hl4_2bmasqdHkYWHcyTif4pvhGhQP-Vup_DX50phd8w8TLe7LtQy7FF3FgOxpG-GrkSic.AT1_83Q1q6hR";
+        const webmap = new WebMap({
+          portalItem: {
+            id: "c1984f0caafa4895bbe2317deb58ebad"
+          }
+        });
+        const view = new MapView({
+          map: webmap,
+          container: "viewDiv",
+          center: [-0.131340, 51.513590],
+          zoom: 6, 
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <div id="viewDiv"></div>
+  </body>
+</html>
