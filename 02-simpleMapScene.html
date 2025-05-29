@@ -5,6 +5,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
     <link rel="stylesheet" href="https://js.arcgis.com/4.4/esri/css/main.css" />
   </head>
   <body>
@@ -30,14 +31,17 @@
     </button>
     <div id="mapview" style="width: 500px; height: 400px">maps</div>
     <script type="module">
-      import Map from "https://js.arcgis.com/4.29/@arcgis/core/Map.js";
-      import MapView from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js";
-      import SceneView from "https://js.arcgis.com/4.29/@arcgis/core/views/SceneView.js";
-
       let topomap;
       let satellitemap;
       let streetmap;
       let sceneview;
+      let lastlong;
+      let lastlat;
+      let lastzoom;
+
+      import Map from "https://js.arcgis.com/4.29/@arcgis/core/Map.js";
+      import MapView from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js";
+      import SceneView from "https://js.arcgis.com/4.29/@arcgis/core/views/SceneView.js";
 
       topomap = new Map({
         basemap: "topo", // Basemap layer service
@@ -63,16 +67,51 @@
       document
         .getElementById("satellite")
         .addEventListener("click", function () {
-          sceneview.map = satellitemap;
+          setMapPlace(
+            sceneview.center.latitude,
+            sceneview.center.longitude,
+            sceneview.zoom,
+            satellitemap
+          );
         });
+
       document.getElementById("topomap").addEventListener("click", function () {
-        sceneview.map = topomap;
+        setMapPlace(
+            sceneview.center.latitude,
+            sceneview.center.longitude,
+            sceneview.zoom,
+            topomap
+          );
       });
+
       document
         .getElementById("streetmap")
         .addEventListener("click", function () {
-          sceneview.map = streetmap;
+
+          setMapPlace(
+            sceneview.center.latitude,
+            sceneview.center.longitude,
+            sceneview.zoom,
+            streetmap
+          );
         });
+
+        //Define o Mesmo lugar e zoom no mapa
+        function setMapPlace(lat, long, zoom,maptype) {
+          lastlat = lat;
+          lastlong = long;
+          lastzoom = zoom;
+
+          let promise = new Promise(function (resolve, reject) {
+            sceneview.map = maptype;
+            resolve();
+          });
+
+          promise.then(function () {
+            sceneview.center = [lastlong, lastlat];
+            sceneview.zoom = lastzoom;
+          });
+        }
     </script>
   </body>
 </html>

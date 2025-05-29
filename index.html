@@ -1,56 +1,133 @@
 <!DOCTYPE html>
 <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Mapa de Obras Públicas</title>
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.29/esri/themes/light/main.css"
+    />
 
-<head>
-  <meta charset="utf-8" />
-  <title>Mapa de Obras Públicas</title>
-  <link rel="stylesheet" href="https://js.arcgis.com/4.29/esri/themes/light/main.css" />
-  <style>
-    html,
-    body,
-    #viewDiv {
-      padding: 0;
-      margin: 0;
-      height: 100%;
-    }
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+      }
 
-    #controls {
-      position: absolute;
-      top: 10px;
-      left: 60px;
-      z-index: 99;
-      background: white;
-      padding: 10px;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    }
-  </style>
-</head>
+      #controls {
+        position: absolute;
+        top: 10px;
+        left: 60px;
+        z-index: 99;
+        background: white;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      }
 
-<body>
-  <div id="controls">
-    <label for="typeBuildSelect">Filtrar por tipo de obra:</label>
-    <select id="typeBuildSelect">
-      <option value="">Todas</option>
-    </select>
-  </div>
-  <div id="viewDiv"></div>
+      #maptype {
+        position: absolute;
+        top: 10px;
+        left: 400px;
+        z-index: 99;
+        background: white;
+        padding: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+      }
 
-  <script type="module">
+      #basemapType {
+        display: flex;
+        gap: 10px; /* Espaçamento entre os botões */
+      }
 
+      #basemapType button {
+        display: inline-block;
+        padding: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="controls">
+      <label for="typeBuildSelect">Filtrar por tipo de obra:</label>
+      <select id="typeBuildSelect">
+        <option value="">Todas</option>
+      </select>
+    </div>
+
+    <div id="maptype">
+      <label for="basemapType">Tipo de Mapa:</label>
+      <div id="basemapType"></div>
+    </div>
+
+    <div id="viewDiv"></div>
+
+    <script type="module">
       import Map from "https://js.arcgis.com/4.29/@arcgis/core/Map.js";
-      import MapView from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js"; 
+      import MapView from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js";
       import FeatureLayer from "https://js.arcgis.com/4.29/@arcgis/core/layers/FeatureLayer.js";
+      import Legend from "https://js.arcgis.com/4.29/@arcgis/core/widgets/Legend.js";
+
+      let buildsLayer;
+
+      let basemaps = [];
+      basemaps.push({
+        name: "Topográfico",
+        value: "topo-vector",
+      });
+      basemaps.push({
+        name: "Satelite",
+        value: "satellite",
+      });
+      basemaps.push({
+        name: "Híbrido",
+        value: "hybrid",
+      });
+      basemaps.push({
+        name: "Estradas",
+        value: "streets-vector",
+      });
+      basemaps.push({
+        name: "Terreno",
+        value: "terrain",
+      });
+      basemaps.push({
+        name: "Caminhos",
+        value: "osm",
+      });
+      basemaps.push({
+        name: "Oceanos",
+        value: "oceans",
+      });
+
+      basemaps.forEach((basemap) => {
+        const button = document.createElement("button");
+        button.textContent = basemap.name;
+        button.onclick = () => {
+          map.basemap = basemap.value;
+        };
+        document.getElementById("basemapType").appendChild(button);
+      });
 
       const map = new Map({
-        basemap: "satellite"
+        basemap: "satellite",
       });
 
       const view = new MapView({
         container: "viewDiv",
         map: map,
         center: [-40.3128, -20.3155], // Vitória, ES
-        zoom: 13
+        zoom: 13,
       });
+
+      const legend = new Legend({
+        view: view,
+      });
+      view.ui.add(legend, "bottom-right");
 
       const typeBuildSelect = document.getElementById("typeBuildSelect");
 
@@ -64,7 +141,7 @@
         { name: "Infraestrutura", code: 7 },
         { name: "Assistência Social", code: 8 },
         { name: "Habitação", code: 9 },
-        { name: "Escadarias", code: 10 }
+        { name: "Escadarias", code: 10 },
       ];
 
       codedValues.forEach(({ code, name }) => {
@@ -74,7 +151,7 @@
         typeBuildSelect.appendChild(option);
       });
 
-      const buildsLayer = new FeatureLayer({
+      buildsLayer = new FeatureLayer({
         url: "https://gis.vitoria.es.gov.br/arcgis/rest/services/Edit/ObraPublicaStoryMaps/MapServer/0",
         outFields: ["*"],
         popupTemplate: {
@@ -85,18 +162,18 @@
             <strong>Contratada:</strong> {contratada}<br>
             <strong>Percentual de andamento:</strong> {percentualAndamento}%<br>
             <strong>Situação:</strong> {situacaoAtual}
-          `
-        }
+          `,
+        },
       });
 
       typeBuildSelect.addEventListener("change", () => {
         const selected = typeBuildSelect.value;
-        buildsLayer.definitionExpression = selected ? `tipo = ${selected}` : null;
+        buildsLayer.definitionExpression = selected
+          ? `tipo = ${selected}`
+          : null;
       });
 
       map.add(buildsLayer);
-
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>

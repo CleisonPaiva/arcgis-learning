@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Map Add Layer</title>
+
+    <link
+      rel="stylesheet"
+      href="https://js.arcgis.com/4.29/esri/themes/light/main.css"
+    />
+    <style>
+      html,
+      body,
+      #mapView {
+        padding: 0;
+        margin: 0;
+        height: 96%;
+        width: 100%;
+      }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body>
+    <h1>Add Layer to Map</h1>
+
+    <select
+      id="layerSelect"
+      class="bg-gray-200 border border-gray-300 text-gray-700 py-2 px-4 rounded"
+    >
+      <option value="">Select a Layer</option>
+    </select>
+    <div id="mapView"></div>
+
+    <script type="module">
+      import Map from "https://js.arcgis.com/4.29/@arcgis/core/Map.js";
+      import MapView from "https://js.arcgis.com/4.29/@arcgis/core/views/MapView.js";
+      import esriRequest from "https://js.arcgis.com/4.29/@arcgis/core/request.js";
+      import FeatureLayer from "https://js.arcgis.com/4.29/@arcgis/core/layers/FeatureLayer.js";
+      import Legend from "https://js.arcgis.com/4.29/@arcgis/core/widgets/Legend.js";
+
+
+      let map;
+      let mapView;
+      let request;
+      let layer;
+
+      //Usar window para acessar o objeto global
+      map = new Map({
+        basemap: "osm",
+        //basemap: "satellite",
+      });
+
+      mapView = new MapView({
+        container: "mapView",
+        map: map,
+        center: [-40.3128, -20.3155], // Vitória, ES
+        zoom: 13,
+      });
+
+
+      let  legend =new Legend({
+        view:mapView,
+      });
+
+        mapView.ui.add(legend, "bottom-right");
+      let url =
+        "https://gis.vitoria.es.gov.br/arcgis/rest/services/Opendata?f=json";
+      let options = { responseType: "json" };
+
+      esriRequest(url, options)
+        .then(function (response) {
+          const result = response.data;
+          const listservices = document.getElementById("layerSelect");
+          listservices.addEventListener("change", function () {
+
+            const selectedLayer = listservices.value;
+
+
+            if (layer) {
+              map.remove(layer);
+            }
+            layer = new FeatureLayer({
+              url:
+                "https://gis.vitoria.es.gov.br/arcgis/rest/services/"+selectedLayer+"/MapServer?f=json",
+            });
+
+            map.add(layer);
+          });
+
+          result.services.forEach(function (service) {
+              const option = document.createElement("option");
+              option.value = service.name;
+              option.textContent = service.name;
+              document.getElementById("layerSelect").appendChild(option);
+
+          });
+          console.log("Dados recebidos:", result);
+        })
+
+        .catch(function (error) {
+          console.error("Erro ao buscar os dados:", error);
+        });
+    </script>
+  </body>
+</html>
